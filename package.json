@@ -1,0 +1,14 @@
+{
+    "name": "com.dimatidev.logsytem",
+    "displayName": "LogSystem",
+    "version": "0.0.1",
+    "unity": "2018.4",
+    "description": "",
+    "author": "DimaTi <timofeenkodima@gmail.com> (https://github.com/dimaTidev)",
+    "category": "Debug",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/dimaTidev/LogSystem.git"
+    },
+    "dependencies": []
+}
