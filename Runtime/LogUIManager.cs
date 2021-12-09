@@ -185,10 +185,8 @@ namespace DimaTi.Debugging
                 if(panel_allLogs.activeSelf)
                     RefreshFilters();
             }
-            else
-            {
-                RefreshCounts();
-            }
+
+            RefreshCounts();
         }
 
         public void Callback_OnClick(LogUI log)
