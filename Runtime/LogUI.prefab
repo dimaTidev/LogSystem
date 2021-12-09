@@ -84,6 +84,7 @@ GameObject:
   - component: {fileID: 2594960544333499111}
   - component: {fileID: 4508690709586388052}
   - component: {fileID: 5658985308210563619}
+  - component: {fileID: 227267547}
   m_Layer: 5
   m_Name: LogUI
   m_TagString: Untagged
@@ -108,11 +109,11 @@ RectTransform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 50}
   m_SizeDelta: {x: 0, y: 100}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 0, y: 1}
 --- !u!222 &2594960544333499111
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -174,6 +175,19 @@ MonoBehaviour:
   onClickEvent:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &227267547
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3041631946130406345}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1200242548, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ShowMaskGraphic: 1
 --- !u!1 &5415449214317720313
 GameObject:
   m_ObjectHideFlags: 0
@@ -208,8 +222,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 52.224976, y: -79.22499}
-  m_SizeDelta: {x: -103.7, y: 41.55}
+  m_AnchoredPosition: {x: 52.224976, y: -68.192}
+  m_SizeDelta: {x: -103.69995, y: 63.61626}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8707865650962967796
 CanvasRenderer:
@@ -285,8 +299,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 52.224976, y: -29.199997}
-  m_SizeDelta: {x: -103.69995, y: 58.5}
+  m_AnchoredPosition: {x: 52.224976, y: -18.2}
+  m_SizeDelta: {x: -103.69995, y: 36.36731}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &246164246155671651
 CanvasRenderer:
@@ -316,10 +330,10 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 37
+    m_FontSize: 28
     m_FontStyle: 1
     m_BestFit: 0
-    m_MinSize: 6
+    m_MinSize: 2
     m_MaxSize: 149
     m_Alignment: 3
     m_AlignByGeometry: 0

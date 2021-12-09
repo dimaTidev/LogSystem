@@ -14,7 +14,7 @@ namespace DimaTi.Debugging
         [SerializeField] Text text_log = null;
         [SerializeField] Text text_trace = null;
         [SerializeField] Image image_fon = null;
-        [SerializeField] bool isUseSiblineColorize = false;
+     //   [SerializeField] bool isUseSiblineColorize = false;
         [SerializeField] Sprite[] sprites = null;
         string logString;
         string stackTrace;
@@ -59,8 +59,13 @@ namespace DimaTi.Debugging
 
             if (image_fon) image_fon.enabled = true;
 
-            if (image_fon && isUseSiblineColorize)
-                image_fon.color = transform.parent.childCount % 2 == 0 ? new Color(0.26f, 0.26f, 0.26f, 1f) : new Color(0.28f, 0.28f, 0.28f, 1f);
+           
+        }
+
+        public void SetID(int id)
+        {
+            if (image_fon)
+                image_fon.color = id % 2 == 0 ? new Color(0.22f, 0.22f, 0.22f, 1f) : new Color(0.28f, 0.28f, 0.28f, 1f);
         }
 
         public void Get_Log(out string logString, out string stackTrace, out LogType type, out string time)
@@ -98,7 +103,7 @@ namespace DimaTi.Debugging
         }
 
         Action<LogUI> onClick;
-        public void Subscribe_OnClick(Action<LogUI> callback) => onClick += callback;
+        public void Subscribe_OnClick(Action<LogUI> callback) => onClick = callback;
         public void OnPointerClick(PointerEventData eventData)
         {
             onClick?.Invoke(this);

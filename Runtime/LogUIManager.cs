@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System;
+using DimaTi.UI;
 
 namespace DimaTi.Debugging
 {
@@ -13,8 +14,9 @@ namespace DimaTi.Debugging
         [SerializeField] bool removeInEditor = false;
         [Tooltip("if true && if not developer build && (currentPlatform != WindowsEditor & OSXEditor) - then in Awake will disable logger")]
         [SerializeField] bool isDisableLogs = false;
+        [SerializeField] bool isUseRealtimeRefresh; //realtime refresh list or refresh only when open viewer
         [SerializeField] LogUI prefab = null;
-        List<LogUI> logs = new List<LogUI>();
+       // List<LogUI> logs = new List<LogUI>();
         [SerializeField] GameObject panel_allLogs = null;
         [SerializeField] LogUI logDescription = null;
         [SerializeField] LogUI logSimple = null;
@@ -23,6 +25,7 @@ namespace DimaTi.Debugging
         [SerializeField] Text[] text_logTypeCounts = null;
         [SerializeField] Text[] text_logTypeCountsSimple = null;
         [SerializeField] Button[] button_filters = null;
+        
 
         [SerializeField] bool[] filters = null;
 
@@ -61,7 +64,7 @@ namespace DimaTi.Debugging
                 if(Application.platform == RuntimePlatform.WindowsEditor || Application.platform == RuntimePlatform.OSXEditor)
                     Destroy(gameObject);
 
-            DontDestroyOnLoad(this.gameObject);
+            DontDestroyOnLoad(this.gameObject);   
         }
 
         void Start()
@@ -71,7 +74,12 @@ namespace DimaTi.Debugging
 #endif
             //filters = new bool[] { true, true, true };
             RefreshFilters();
+
+            if (scrollReusable)
+                scrollReusable.Set_Count(1);
         }
+
+
 
         #if UNITY_EDITOR
         bool LoadFromTextAsset(TextAsset textAsset)
@@ -98,7 +106,7 @@ namespace DimaTi.Debugging
                     float tempTime = 0;
                     if(logArray.Length > 1)
                         float.TryParse(logArray[1].Replace(".", ","), out tempTime);
-                    LogImmediatly(logArray.Length > 2 ? logArray[2] : "", logArray.Length > 3 ? logArray[3] : "", (LogType)idLogType, tempTime);
+                    LogImmediately(logArray.Length > 2 ? logArray[2] : "", logArray.Length > 3 ? logArray[3] : "", (LogType)idLogType, tempTime);
                 }
             }
             return true;
@@ -112,46 +120,82 @@ namespace DimaTi.Debugging
         {
             if (!prefab || !content) yield break;
             yield return new WaitForEndOfFrame();
-            LogImmediatly(logString, stackTrace, type, Time.realtimeSinceStartup);
+            LogImmediately(logString, stackTrace, type, Time.realtimeSinceStartup);
+        }
+
+        List<LogData> logsData_toShow = new List<LogData>();
+        List<LogData> logsData = new List<LogData>();
+
+        public struct LogData
+        {
+            public string 
+                logString, 
+                stackTrace;
+            public LogType type;
+            public float time;
+
+            public LogData(string logString, string stackTrace, LogType type, float time)
+            {
+                this.logString = logString;
+                this.stackTrace = stackTrace;
+                this.type = type;
+                this.time = time;
+            }
         }
 
         /// Do not subscribe this to 'Application.logMessageReceived += LogImmediatly' it is not safety.
         /// Becouse log can be invoke in 'UI rebuild loop', that means if you change any UI component you get Error.
         /// For avoid this Error call 'IELog()', this IEnumerator wait for next frame and invoke LogImmediatly in outside 'UI rebuild loop'
-        void LogImmediatly(string logString, string stackTrace, LogType type, float time)
+        void LogImmediately(string logString, string stackTrace, LogType type, float time)
         {
-            if (!prefab || !content) return;
-            if (logs == null) logs = new List<LogUI>();
-            GameObject go = Instantiate(prefab.gameObject, content);
-            go.transform.SetAsFirstSibling();
-            go.transform.localScale = Vector3.one;
-            LogUI logUI = go.GetComponent<LogUI>();
-            logs.Add(logUI);
+            logsData.Add(new LogData(logString, stackTrace, type, time));
+           // logsData_toShow.Add(new LogData(logString, stackTrace, type, time));
 
-            TimeSpan timeSpan = TimeSpan.FromSeconds(time);
+            RefreshReusableAll();
 
-            logUI.Log(logString, stackTrace, type, timeSpan.ToString("hh':'mm':'ss"));
-            logUI.Subscribe_OnClick(Callback_OnClick);
+          // if (!prefab || !content) return;
+          // if (logs == null) logs = new List<LogUI>();
+          // GameObject go = Instantiate(prefab.gameObject, content);
+          // go.transform.SetAsFirstSibling();
+          // go.transform.localScale = Vector3.one;
+          // LogUI logUI = go.GetComponent<LogUI>();
+          // logs.Add(logUI);
+          //
+          // TimeSpan timeSpan = TimeSpan.FromSeconds(time);
+          //
+          // logUI.Log(logString, stackTrace, type, timeSpan.ToString("hh':'mm':'ss"));
+          // logUI.Subscribe_OnClick(Callback_OnClick);
+          //
+          //
+           int idCount = type == LogType.Log ? 0 : type == LogType.Warning ? 1 : 2;
+         //  if (filters != null && idCount >= 0 && idCount < filters.Length && filters[idCount])
+         //  {
+         //      go.SetActive(true);
+         //      if (logSimple)
+         //          logSimple.Log(logString, stackTrace, type, "");
+         //  }
+         //  else
+         //      go.SetActive(false);
+          
+           if (counts != null && idCount >= 0 && idCount < counts.Length)
+               counts[idCount]++;
 
-
-            int idCount = type == LogType.Log ? 0 : type == LogType.Warning ? 1 : 2;
-            if (filters != null && idCount >= 0 && idCount < filters.Length && filters[idCount])
+            if (isUseRealtimeRefresh)
             {
-                go.SetActive(true);
-                if (logSimple)
-                    logSimple.Log(logString, stackTrace, type, "");
+                if(panel_allLogs.activeSelf)
+                    RefreshFilters();
             }
             else
-                go.SetActive(false);
-
-            if (counts != null && idCount >= 0 && idCount < counts.Length)
-                counts[idCount]++;
-
-            RefreshCounts();
+            {
+                RefreshCounts();
+            }
         }
 
         public void Callback_OnClick(LogUI log)
         {
+            if (!log)
+                return;
+
             if (logDescription)
             {
                 logDescription.Log(log);
@@ -161,11 +205,11 @@ namespace DimaTi.Debugging
 
         public void Clear()
         {
-            if (logs == null || logs.Count == 0) return;
-            for (int i = 0; i < logs.Count; i++)
-                if (logs[i])
-                    Destroy(logs[i].gameObject);
-            logs.Clear();
+            if (logsData == null || logsData_toShow == null) return;
+
+            logsData.Clear();
+            logsData_toShow.Clear();
+
             if (logSimple) logSimple.Clear();
 
             RefreshFilters();
@@ -177,6 +221,7 @@ namespace DimaTi.Debugging
             if (idFilter < 0 || idFilter >= filters.Length) return;
 
             filters[idFilter] = !filters[idFilter];
+
             RefreshFilters();
         }
 
@@ -186,32 +231,29 @@ namespace DimaTi.Debugging
         {
             int[] counts = new int[3];
 
-            for (int i = 0; i < logs.Count; i++)
+            logsData_toShow.Clear();
+
+            for (int i = 0; i < logsData.Count; i++)
             {
-                LogUI fLog = logs[i];
-                LogType type = fLog.TypeLog;
+                LogData fLog = logsData[i];
+                LogType type = fLog.type;
+
                 if (type == LogType.Log)
                 {
-                    if (!filters[0])
-                        fLog.gameObject.SetActive(false);
-                    else
-                        fLog.gameObject.SetActive(true);
-                    counts[0]++;
+                    if (filters[0])
+                        logsData_toShow.Add(fLog);
+                     counts[0]++;
                 }
                 else if (type == LogType.Warning)
                 {
-                    if (!filters[1])
-                        fLog.gameObject.SetActive(false);
-                    else
-                        fLog.gameObject.SetActive(true);
+                    if (filters[1])
+                        logsData_toShow.Add(fLog);
                     counts[1]++;
                 }
                 else
                 {
-                    if (!filters[2])
-                        fLog.gameObject.SetActive(false);
-                    else
-                        fLog.gameObject.SetActive(true);
+                    if (filters[2])
+                        logsData_toShow.Add(fLog);
                     counts[2]++;
                 }
             }
@@ -226,6 +268,7 @@ namespace DimaTi.Debugging
                 }
             this.counts = counts;
             RefreshCounts();
+            RefreshReusableAll();
         }
         void RefreshCounts()
         {
@@ -256,5 +299,33 @@ namespace DimaTi.Debugging
             if (panel_allLogs) panel_allLogs.gameObject.SetActive(false);
             Time.timeScale = tempTimeScale;
         }
+
+
+        #region ReusableUI
+        //-----------------------------------------------------------------------------------------------------------------
+        [SerializeField] ScrollRect_Reusable scrollReusable = null;
+
+        void RefreshReusableAll() 
+        {
+            scrollReusable.Set_Count(logsData_toShow.Count);
+            scrollReusable.RefhreshAllChilds();
+        }
+
+        public void RefreshReusableLot(GameObject target, int id)
+        {
+            if (!target )  return;
+            LogUI logUI = target.GetComponent<LogUI>();
+            if (!logUI) return;
+
+            if (logsData_toShow == null || id < 0 || id >= logsData_toShow.Count)
+                return;
+            
+            TimeSpan timeSpan = TimeSpan.FromSeconds(logsData_toShow[id].time);
+            logUI.Log(logsData_toShow[id].logString, logsData_toShow[id].stackTrace, logsData_toShow[id].type, timeSpan.ToString("hh':'mm':'ss"));
+            logUI.Subscribe_OnClick(Callback_OnClick);
+            logUI.SetID(id);
+        }
+        //-----------------------------------------------------------------------------------------------------------------
+        #endregion
     }
 }

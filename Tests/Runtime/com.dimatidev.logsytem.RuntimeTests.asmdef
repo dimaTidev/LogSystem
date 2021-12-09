@@ -1,0 +1,14 @@
+{
+"name" : "com.dimatidev.logsytem.RuntimeTests",
+ "references": [
+     "com.dimatidev.logsytem.Runtime"
+ ],
+ "optionalUnityReferences": [],
+ "excludePlatforms": [],
+ "allowUnsafeCode": false,
+ "overrideReferences": false,
+ "precompiledReferences": [],
+ "autoReferenced": true,
+ "defineConstraints": []
+
+}

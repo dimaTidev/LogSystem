@@ -1,3 +1,14 @@
 {
-"name" : "com.dimatidev.logsytem.Runtime"
+    "name": "com.dimatidev.logsytem.Runtime",
+    "references": [
+        "com.dimati.uiextensions.Runtime"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
 }
