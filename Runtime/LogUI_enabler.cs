@@ -1,4 +1,4 @@
-﻿#define UI_LOG_SYSTEM
+﻿//#define UI_LOG_SYSTEM
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
