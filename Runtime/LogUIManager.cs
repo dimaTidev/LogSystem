@@ -34,7 +34,16 @@ namespace DimaTi.Debugging
         [SerializeField] TextAsset textAsset = null;
 #endif
 
-        public event Action OnReceivingLog;
+        //public event Action OnReceivingLog;
+
+        public int LogsCount => logsData_toShow.Count;
+
+        public LogData GetFilteredLogByID(int id)
+        {
+            if (logsData_toShow == null || id < 0 || id >= logsData_toShow.Count)
+                return default;
+            return logsData_toShow[id];
+        }
 
         void OnEnable()
         {
@@ -289,7 +298,7 @@ namespace DimaTi.Debugging
                 for (int i = 0; i < text_logTypeCountsSimple.Length; i++)
                     text_logTypeCountsSimple[i].text = counts[i].ToString();
 
-            OnReceivingLog?.Invoke();
+            //OnReceivingLog?.Invoke();
         }
 
 
@@ -310,43 +319,6 @@ namespace DimaTi.Debugging
             Time.timeScale = tempTimeScale;
         }
 
-
-        #region ReusableUI
-        //-----------------------------------------------------------------------------------------------------------------
-      //  [SerializeField] ScrollRect_Reusable scrollReusable = null;
-
-      //  void RefreshReusableAll() 
-      //  {
-      //    //  scrollReusable.Set_Count(logsData_toShow.Count);
-      //    //  scrollReusable.RefhreshAllChilds();
-      //  }
-
-      // public void RefreshReusableLot(GameObject target, int id)
-      // {
-      //     if (!target )  return;
-      //     LogUI logUI = target.GetComponent<LogUI>();
-      //     if (!logUI) return;
-      //
-      //     if (logsData_toShow == null || id < 0 || id >= logsData_toShow.Count)
-      //         return;
-      //     
-      //     TimeSpan timeSpan = TimeSpan.FromSeconds(logsData_toShow[id].time);
-      //     //logUI.Log(logsData_toShow[id].logString, logsData_toShow[id].stackTrace, logsData_toShow[id].type, timeSpan.ToString("hh':'mm':'ss"));
-      //     logUI.Subscribe_OnClick(Callback_OnClick);
-      //     logUI.SetID(id);
-      // }
-        //-----------------------------------------------------------------------------------------------------------------
-        #endregion
-
-        public int LogsCount => logsData_toShow.Count;
-
-        public LogData GetFilteredLogByID(int id)
-        {
-            if (logsData_toShow == null || id < 0 || id >= logsData_toShow.Count)
-                return default;
-            return logsData_toShow[id];
-        }
-
         [ContextMenu("Log tests")]
         void TestLogs()
         {
@@ -354,16 +326,4 @@ namespace DimaTi.Debugging
                 Debug.Log("test logs: " + i);
         }
     }
-
-
-  // public class Container_LogUI
-  // {
-  //     public Log
-  //
-  //     public Container_LogUI(Sprite sprite)
-  //     {
-  //         this.sprite = sprite;
-  //     }
-  // }
-
 }
