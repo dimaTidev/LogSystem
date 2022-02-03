@@ -1,7 +1,7 @@
 {
     "name": "com.dimatidev.logsytem",
     "displayName": "LogSystem",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "unity": "2018.4",
     "unityRelease": "",
     "description": "",
@@ -15,7 +15,7 @@
         "url": "https://github.com/dimaTidev/LogSystem.git"
     },
     "gitDependencies": {
-        "com.dimati.uiextensions": "https://github.com/dimaTidev/UI_Extensions.git#0.2.0"
+        "com.dimati.uiextensions": "https://github.com/dimaTidev/UI_Extensions.git#0.3.0"
     },
     "dependencies": {
     }

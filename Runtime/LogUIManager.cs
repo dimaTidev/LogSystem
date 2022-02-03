@@ -8,8 +8,9 @@ using DimaTi.UI;
 namespace DimaTi.Debugging
 {
     [DefaultExecutionOrder(-200)]
-    public class LogUIManager : MonoBehaviour
+    public class LogUIManager : MonoBehaviour//Singleton<LogUIManager>
     {
+        public static LogUIManager instance;
         [Tooltip("if true && (currentPlatform == WindowsEditor || OSXEditor) - then in Awake will Destroy this gameObject")]
         [SerializeField] bool removeInEditor = false;
         [Tooltip("if true && if not developer build && (currentPlatform != WindowsEditor & OSXEditor) - then in Awake will disable logger")]
@@ -33,6 +34,8 @@ namespace DimaTi.Debugging
         [SerializeField] TextAsset textAsset = null;
 #endif
 
+        public event Action OnReceivingLog;
+
         void OnEnable()
         {
 #if UNITY_EDITOR
@@ -48,8 +51,15 @@ namespace DimaTi.Debugging
             Application.logMessageReceived -= Log;
         }
 
+       // protected override void Awake()
         void Awake()
         {
+            if (instance)
+                DestroyImmediate(gameObject);
+            else
+                instance = this;
+
+           // base.Awake();
             if(isDisableLogs)
                 if(Application.platform != RuntimePlatform.WindowsEditor && Application.platform != RuntimePlatform.OSXEditor)
                 {
@@ -75,8 +85,8 @@ namespace DimaTi.Debugging
             //filters = new bool[] { true, true, true };
             RefreshFilters();
 
-            if (scrollReusable)
-                scrollReusable.Set_Count(1);
+           // if (scrollReusable)
+           //     scrollReusable.Set_Count(1);
         }
 
 
@@ -151,7 +161,7 @@ namespace DimaTi.Debugging
             logsData.Add(new LogData(logString, stackTrace, type, time));
            // logsData_toShow.Add(new LogData(logString, stackTrace, type, time));
 
-            RefreshReusableAll();
+          //  RefreshReusableAll();
 
           // if (!prefab || !content) return;
           // if (logs == null) logs = new List<LogUI>();
@@ -196,7 +206,7 @@ namespace DimaTi.Debugging
 
             if (logDescription)
             {
-                logDescription.Log(log);
+                logDescription.Copy_Data(log);
                 logDescription.gameObject.SetActive(true);
             }
         }
@@ -266,7 +276,7 @@ namespace DimaTi.Debugging
                 }
             this.counts = counts;
             RefreshCounts();
-            RefreshReusableAll();
+           // RefreshReusableAll();
         }
         void RefreshCounts()
         {
@@ -278,6 +288,8 @@ namespace DimaTi.Debugging
             if (text_logTypeCountsSimple != null && text_logTypeCountsSimple.Length == counts.Length)
                 for (int i = 0; i < text_logTypeCountsSimple.Length; i++)
                     text_logTypeCountsSimple[i].text = counts[i].ToString();
+
+            OnReceivingLog?.Invoke();
         }
 
 
@@ -301,29 +313,57 @@ namespace DimaTi.Debugging
 
         #region ReusableUI
         //-----------------------------------------------------------------------------------------------------------------
-        [SerializeField] ScrollRect_Reusable scrollReusable = null;
+      //  [SerializeField] ScrollRect_Reusable scrollReusable = null;
 
-        void RefreshReusableAll() 
-        {
-            scrollReusable.Set_Count(logsData_toShow.Count);
-            scrollReusable.RefhreshAllChilds();
-        }
+      //  void RefreshReusableAll() 
+      //  {
+      //    //  scrollReusable.Set_Count(logsData_toShow.Count);
+      //    //  scrollReusable.RefhreshAllChilds();
+      //  }
 
-        public void RefreshReusableLot(GameObject target, int id)
-        {
-            if (!target )  return;
-            LogUI logUI = target.GetComponent<LogUI>();
-            if (!logUI) return;
-
-            if (logsData_toShow == null || id < 0 || id >= logsData_toShow.Count)
-                return;
-            
-            TimeSpan timeSpan = TimeSpan.FromSeconds(logsData_toShow[id].time);
-            logUI.Log(logsData_toShow[id].logString, logsData_toShow[id].stackTrace, logsData_toShow[id].type, timeSpan.ToString("hh':'mm':'ss"));
-            logUI.Subscribe_OnClick(Callback_OnClick);
-            logUI.SetID(id);
-        }
+      // public void RefreshReusableLot(GameObject target, int id)
+      // {
+      //     if (!target )  return;
+      //     LogUI logUI = target.GetComponent<LogUI>();
+      //     if (!logUI) return;
+      //
+      //     if (logsData_toShow == null || id < 0 || id >= logsData_toShow.Count)
+      //         return;
+      //     
+      //     TimeSpan timeSpan = TimeSpan.FromSeconds(logsData_toShow[id].time);
+      //     //logUI.Log(logsData_toShow[id].logString, logsData_toShow[id].stackTrace, logsData_toShow[id].type, timeSpan.ToString("hh':'mm':'ss"));
+      //     logUI.Subscribe_OnClick(Callback_OnClick);
+      //     logUI.SetID(id);
+      // }
         //-----------------------------------------------------------------------------------------------------------------
         #endregion
+
+        public int LogsCount => logsData_toShow.Count;
+
+        public LogData GetFilteredLogByID(int id)
+        {
+            if (logsData_toShow == null || id < 0 || id >= logsData_toShow.Count)
+                return default;
+            return logsData_toShow[id];
+        }
+
+        [ContextMenu("Log tests")]
+        void TestLogs()
+        {
+            for (int i = 0; i < 10; i++)
+                Debug.Log("test logs: " + i);
+        }
     }
+
+
+  // public class Container_LogUI
+  // {
+  //     public Log
+  //
+  //     public Container_LogUI(Sprite sprite)
+  //     {
+  //         this.sprite = sprite;
+  //     }
+  // }
+
 }
