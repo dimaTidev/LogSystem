@@ -15,7 +15,11 @@ namespace DimaTi.Debugging
         [SerializeField] bool removeInEditor = false;
         [Tooltip("if true && if not developer build && (currentPlatform != WindowsEditor & OSXEditor) - then in Awake will disable logger")]
         [SerializeField] bool isDisableLogs = false;
-        [SerializeField] bool isUseRealtimeRefresh; //realtime refresh list or refresh only when open viewer
+
+       // [Tooltip("Using Realtime refresh can Invoke StackOverflow error when scripts from this system do a log -> refresh, and log -> refresh -> log -> Refresh!!!!")]
+       // [SerializeField] 
+        bool isUseRealtimeRefresh; //realtime refresh list or refresh only when open viewer
+
         [SerializeField] LogUI prefab = null;
        // List<LogUI> logs = new List<LogUI>();
         [SerializeField] GameObject panel_allLogs = null;
@@ -34,7 +38,7 @@ namespace DimaTi.Debugging
         [SerializeField] TextAsset textAsset = null;
 #endif
 
-        //public event Action OnReceivingLog;
+        public event Action OnReceivingLog;
 
         public int LogsCount => logsData_toShow.Count;
 
@@ -244,7 +248,8 @@ namespace DimaTi.Debugging
 
         int[] counts = new int[3];
 
-        void RefreshFilters()
+        //Вызывает кнопка Refresh
+        public void RefreshFilters()
         {
             int[] counts = new int[3];
 
@@ -285,7 +290,8 @@ namespace DimaTi.Debugging
                 }
             this.counts = counts;
             RefreshCounts();
-           // RefreshReusableAll();
+            OnReceivingLog?.Invoke();
+            // RefreshReusableAll();
         }
         void RefreshCounts()
         {
@@ -297,8 +303,6 @@ namespace DimaTi.Debugging
             if (text_logTypeCountsSimple != null && text_logTypeCountsSimple.Length == counts.Length)
                 for (int i = 0; i < text_logTypeCountsSimple.Length; i++)
                     text_logTypeCountsSimple[i].text = counts[i].ToString();
-
-            //OnReceivingLog?.Invoke();
         }
 
 
@@ -318,6 +322,8 @@ namespace DimaTi.Debugging
             if (panel_allLogs) panel_allLogs.gameObject.SetActive(false);
             Time.timeScale = tempTimeScale;
         }
+
+        public void Toggle_UseRealTimeRefresh(bool isTrue) => isUseRealtimeRefresh = isTrue;
 
         [ContextMenu("Log tests")]
         void TestLogs()

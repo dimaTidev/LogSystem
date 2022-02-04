@@ -20,10 +20,10 @@ namespace DimaTi.Debugging
 
         void OnEnable()
         {
-           // logManager.OnReceivingLog += RefreshLayoutCount; //иначе возможна рекурсия при логе со скриптов задействованных в этой лог системе!
+            logManager.OnReceivingLog += RefreshLayoutCount; //иначе возможна рекурсия при логе со скриптов задействованных в этой лог системе!
             RefreshLayoutCount();
         }
-        //void OnDisable() => logManager.OnReceivingLog -= RefreshLayoutCount;
+        void OnDisable() => logManager.OnReceivingLog -= RefreshLayoutCount;
 
         protected override LogUIManager.LogData GetData(int id) => logManager.GetFilteredLogByID(id);
     }
