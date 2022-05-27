@@ -15,7 +15,7 @@
         "url": "https://github.com/dimaTidev/LogSystem.git"
     },
     "gitDependencies": {
-        "com.dimati.uiextensions": "https://github.com/dimaTidev/UI_Extensions.git#0.3.0"
+        "com.dimati.uiextensions": "https://github.com/dimaTidev/UI_Extensions.git#0.4.0"
     },
     "dependencies": {
     }
